@@ -18,9 +18,12 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(username: string, password: string) {
+  async register(username: string, password: string, passwordConfirm: string, firstName: string, lastName: string) {
+    if(password != passwordConfirm){
+        throw new BadRequestException(`Passwords do not match.`);
+    }
+    
     const user = await this.usersRepository.findOne({ username });
-
     if (user) {
       throw new BadRequestException(`${username} is already taken`);
     }
@@ -29,6 +32,12 @@ export class AuthService {
     const { password: pw, ...savedUser } = await this.usersRepository.save({
       username,
       password: hashedPassword,
+      firstName,
+      lastName,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      picture: '',
+      resetToken: ''
     });
 
     return savedUser;

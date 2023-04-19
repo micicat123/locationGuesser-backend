@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { LocaionService } from './locaion.service';
-import { LocaionController } from './locaion.controller';
+import { LocationService } from './location.service';
+import { LocationController } from './location.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Guess } from 'src/entities/guess.entity';
 import { Location } from 'src/entities/location.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Guess, Location])],
-    providers: [LocaionService, TypeOrmModule],
-    controllers: [LocaionController]
+    providers: [LocationService, TypeOrmModule],
+    controllers: [LocationController]
 })
-export class LocaionModule {}
+export class LocationModule {}
   

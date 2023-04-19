@@ -4,9 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import typeOrmModuleOptions from './config/orm.config';
 import { AuthModule } from './modules/auth/auth.module';
-import { LocaionModule } from './src/modules/locaion/locaion.module';
-import { LocaionModule } from './modules/locaion/locaion.module';
+import { LocationModule } from './modules/location/location.module';
 import { CommonModulesModule } from './common/common-modules/common-modules.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -18,8 +18,9 @@ import { CommonModulesModule } from './common/common-modules/common-modules.modu
       useFactory: () => typeOrmModuleOptions,
     }),
     AuthModule,
-    LocaionModule,
+    LocationModule,
     CommonModulesModule,
+    UserModule,
   ],
   controllers: [AppController],
 })
