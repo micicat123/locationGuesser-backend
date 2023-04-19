@@ -33,5 +33,10 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-
+#env variables
 *.env
+env-vars.contant
+
+#docker
+Dockerfile
+.dockerignore

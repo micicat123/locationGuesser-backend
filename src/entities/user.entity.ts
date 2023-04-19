@@ -3,10 +3,19 @@ import { CustomBaseEntity } from './base.entity';
 
 @Entity()
 export class User extends CustomBaseEntity {
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   @Index()
   username: string;
 
-  @Column({ select: false })
+  @Column({ select: false, nullable: false })
   password: string;
+
+  @Column({nullable: false})
+  firstName: string;
+
+  @Column({nullable: false})
+  lastName: string;
+
+  @Column()
+  picture: string;
 }

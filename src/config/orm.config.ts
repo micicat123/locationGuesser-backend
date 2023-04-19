@@ -2,6 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+console.log(process.env.DATABASE_URL);
 export const typeOrmModuleOptions: TypeOrmModuleOptions = {
   type: 'postgres',
   url: process.env.DATABASE_URL,
@@ -16,3 +17,5 @@ export const typeOrmModuleOptions: TypeOrmModuleOptions = {
 };
 
 export default typeOrmModuleOptions;
+
+	
