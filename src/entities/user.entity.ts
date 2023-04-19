@@ -18,4 +18,7 @@ export class User extends CustomBaseEntity {
 
   @Column()
   picture: string;
+
+  @Column()
+  resetToken: string;
 }
