@@ -7,9 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EnvVars } from 'src/common/constants/env-vars.contant';
+import { Guess } from 'src/entities/guess.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]),
+  imports: [TypeOrmModule.forFeature([User, Guess]),
             JwtModule.registerAsync({
                 imports: [ConfigModule],
                 inject: [ConfigService],

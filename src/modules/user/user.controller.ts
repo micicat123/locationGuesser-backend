@@ -71,7 +71,6 @@ export class UserController {
     async authenticateToken(
         @Param('token') token: string,
         @Param('username') username: string,
-        @Req() request: Request
     ) {
         const found:User = await this.userService.findBy({username});
 
@@ -85,4 +84,11 @@ export class UserController {
             throw new BadRequestException('The reset token is invalid');
         }
     }
+
+    @Get('/best')
+    async getPersonalBest(@Req() request: Request) {
+        const id = await this.authService.userId(request);
+        return this.userService.getPersonalBest(id);
+    }
+
 }

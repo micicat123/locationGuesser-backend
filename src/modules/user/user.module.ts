@@ -10,9 +10,10 @@ import { EnvVars } from 'src/common/constants/env-vars.contant';
 import { PassportModule } from '@nestjs/passport';
 import { MailModule } from '../mail/mail.module';
 import { MailService } from '../mail/mail.service';
+import { Guess } from 'src/entities/guess.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([User]), 
+    imports: [TypeOrmModule.forFeature([User, Guess]), 
             PassportModule.register({ defaultStrategy: 'jwt' }),
             JwtModule.registerAsync({
                 imports: [ConfigModule],

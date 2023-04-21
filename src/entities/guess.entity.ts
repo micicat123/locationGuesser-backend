@@ -7,7 +7,7 @@ import { Location } from './location.entity';
 export class Guess extends CustomBaseEntity {
   @Column({ nullable: false })
   @Index()
-  distance: string;
+  errorDistance: string;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
@@ -15,5 +15,5 @@ export class Guess extends CustomBaseEntity {
 
   @ManyToOne(() => Location)
   @JoinColumn({name: 'location_id'})
-  quote: Location
+  location: Location
 }
