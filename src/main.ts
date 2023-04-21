@@ -2,6 +2,7 @@ import { ValidationPipe, INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 
 const initSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
@@ -25,6 +26,8 @@ const initValidation = (app: INestApplication) =>
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(cookieParser());
 
   initSwagger(app);
   initValidation(app);

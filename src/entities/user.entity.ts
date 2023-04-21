@@ -7,7 +7,7 @@ export class User extends CustomBaseEntity {
   @Index()
   username: string;
 
-  @Column({ select: false, nullable: false })
+  @Column({ nullable: false })
   password: string;
 
   @Column({nullable: false})

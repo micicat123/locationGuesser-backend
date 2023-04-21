@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { JwtPayloadDto } from './dto/jwt-payload.dto';
@@ -43,12 +44,12 @@ export class AuthService {
     return savedUser;
   }
 
-  async login(user: User) {
-    const payload: JwtPayloadDto = { username: user.username, sub: user.id };
-    return {
+  async login(user: User, response: Response) {
+      const payload: JwtPayloadDto = { username: user.username, sub: user.id };
       // eslint-disable-next-line @typescript-eslint/camelcase
-      access_token: this.jwtService.sign(payload),
-    };
+      const access_token =  this.jwtService.sign(payload);
+      response.cookie('jwt', access_token, {httpOnly: true});
+      return access_token;
   }
 
   async validateUser(username: string, password: string) {
@@ -64,11 +65,23 @@ export class AuthService {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      throw new BadRequestException('Passwords does not match');
+      throw new BadRequestException('Password is not correct');
     }
 
     delete user.password;
 
     return user;
+  }
+
+  async userId(request : Request): Promise<number>{
+    const cookie = request.cookies['jwt'];
+    const data = await this.jwtService.verify(cookie, {secret: process.env.JWT_SECRET});
+
+    return data['sub'];
+  }
+
+  async generateToken(user:User): Promise<string>{
+    const payload: JwtPayloadDto = { username: user.username, sub: user.id };
+    return this.jwtService.sign(payload);
   }
 }
