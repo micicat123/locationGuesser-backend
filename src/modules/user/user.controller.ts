@@ -53,7 +53,7 @@ export class UserController {
         await this.userService.create({
             id, 
             password: hashed
-         });
+        });
         return this.userService.findBy({id});
     }
 

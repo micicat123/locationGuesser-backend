@@ -16,10 +16,10 @@ export class CommonModulesService {
     }
 
     async all(): Promise<any>{
-        return this.repository.find();
+        return await this.repository.find();
     }
 
     async delete(id: any): Promise<any> {
-        return this.repository.delete(id);
+        return await this.repository.delete(id);
     }
 }
