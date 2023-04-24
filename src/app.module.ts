@@ -12,6 +12,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { GuessModule } from './modules/guess/guess.module';
+import { UploadModule } from './modules/upload/upload.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { GuessModule } from './modules/guess/guess.module';
     UserModule,
     MailModule,
     GuessModule,
+    UploadModule,
   ],
   controllers: [AppController],
 })
