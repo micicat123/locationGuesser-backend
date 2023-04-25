@@ -20,8 +20,6 @@ export class GuessController {
         await this.guessService.isAllowed(uid, lId);
 
         return await this.guessService.create({
-            createdAt: new Date(),
-            updatedAt: new Date(),
             errorDistance: distance,
             user: uid,
             location: lId

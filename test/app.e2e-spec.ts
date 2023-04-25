@@ -63,13 +63,13 @@ describe('AppController (e2e)', () => {
       .expect(400);
   });
 
-  // it('Example how to include jwt in request', () => {
-  //   return request(app.getHttpServer())
-  //     .post('/something')
-  //     .set('authorization', `Bearer ${userToken}`)
-  //     .expect(200)
-  //     .expect({ someData: true });
-  // });
+  it('Example how to include jwt in request', () => {
+     return request(app.getHttpServer())
+       .post('/something')
+       .set('authorization', `Bearer ${userToken}`)
+       .expect(200)
+       .expect({ someData: true });
+   });
 
   afterAll(async () => {
     await userRepository.query('DELETE FROM "user"');

@@ -35,8 +35,6 @@ export class AuthService {
       password: hashedPassword,
       firstName,
       lastName,
-      createdAt: new Date(),
-      updatedAt: new Date(),
       picture: '',
       resetToken: ''
     });

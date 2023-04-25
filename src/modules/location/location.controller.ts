@@ -19,8 +19,6 @@ export class LocationController {
         const id = await this.authService.userId(request);
         return this.locationService.create({
             picture: '',
-            createdAt: new Date(),
-            updatedAt: new Date(),
             latitude: body.latitude,
             longitude: body.longitude,
             user: id

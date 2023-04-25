@@ -23,13 +23,8 @@ export class ImageUploadService {
         console.log(error);
         reject(`Failed to upload image file: ${error}`);
       } else {
-        try {
-          const encryptedKey = CryptoJS.AES.encrypt(req.files[0].key, process.env.ENCRYPTION_KEY)
-          resolve(encryptedKey.toString());
-        } catch (error) {
-          console.log(error);
-          reject(`Failed to generate encrypted key: ${error}`);
-        }
+        const encryptedKey = CryptoJS.AES.encrypt(req.files[0].key, process.env.ENCRYPTION_KEY)
+        resolve(encryptedKey.toString());
       }
     });
   });

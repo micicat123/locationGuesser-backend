@@ -11,9 +11,10 @@ import { UserService } from '../user/user.service';
 import { Guess } from 'src/entities/guess.entity';
 import { Location } from 'src/entities/location.entity';
 import { LocationService } from '../location/location.service';
+import { Log } from 'src/entities/Log.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Guess, Location]),
+  imports: [TypeOrmModule.forFeature([User, Guess, Location, Log]),
             JwtModule.registerAsync({
                 imports: [ConfigModule],
                 inject: [ConfigService],

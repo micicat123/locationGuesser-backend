@@ -1,4 +1,4 @@
-import { Body, Put, Req, UseGuards, Controller, BadRequestException, Post, Get, Param } from '@nestjs/common';
+import { Body, Put, Req, UseGuards, Controller, BadRequestException, Post, Get, Param, NotFoundException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserInfoDto } from './dto/update-info.dto';
 import { AuthService } from '../auth/auth.service'
@@ -10,6 +10,7 @@ import { MailService } from '../mail/mail.service';
 import { EmailDto } from '../mail/dto/email.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user.entity';
+import { LogActionDto } from './dto/log-action.dto';
 
 @Controller('user')
 export class UserController {
@@ -19,6 +20,12 @@ export class UserController {
         private mailService: MailService,
         private jwtService: JwtService
     ){ }
+
+    @Get('/best')
+    async getPersonalBest(@Req() request: Request) {
+        const id = await this.authService.userId(request);
+        return this.userService.getPersonalBest(id);
+    }
 
     //@UseGuards(AuthGuard())
     @Put('info')
@@ -57,16 +64,22 @@ export class UserController {
         return this.userService.findBy({id});
     }
 
+    //send email
     @Post('/send-email')
     async sendEmail(@Body() body:EmailDto) {
         const username = body.username;
         const user:User = await this.userService.findBy({username});
+
+        if (!user) {
+            throw new NotFoundException(`User with username ${username} not found`);
+        }
 
         await this.mailService.sendPasswordReset(user);
 
         return { message: 'Email sent' };
     }
 
+    //verify email
     @Get('auth-email/:token/:username')
     async authenticateToken(
         @Param('token') token: string,
@@ -85,10 +98,20 @@ export class UserController {
         }
     }
 
-    @Get('/best')
-    async getPersonalBest(@Req() request: Request) {
+    //log action
+    @Post('/log-action')
+    async logAction(
+        @Body() body:LogActionDto,
+        @Req() request: Request
+    ) {
         const id = await this.authService.userId(request);
-        return this.userService.getPersonalBest(id);
+        const found = await this.userService.findBy({id});
+        await this.userService.logAction(body, found);
     }
 
+    //get logged actions
+    @Get('/admin/logs')
+    async getLogs() {
+        await this.userService.getLogs();
+    }
 }

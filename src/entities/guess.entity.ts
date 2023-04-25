@@ -1,10 +1,10 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
-import { CustomBaseEntity } from './base.entity';
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Location } from './location.entity';
+import { CustomBaseEntity } from './base.entity';
 
 @Entity()
-export class Guess extends CustomBaseEntity {
+export class Guess extends CustomBaseEntity{
   @Column({ nullable: false })
   @Index()
   errorDistance: string;
