@@ -12,18 +12,10 @@ import { Guess } from 'src/entities/guess.entity';
 import { Location } from 'src/entities/location.entity';
 import { LocationService } from '../location/location.service';
 import { Log } from 'src/entities/Log.entity';
+import { JwtConfigModule } from 'src/common/constants/jwtModule.constant';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Guess, Location, Log]),
-            JwtModule.registerAsync({
-                imports: [ConfigModule],
-                inject: [ConfigService],
-                useFactory: async (configService: ConfigService) => ({
-                    secret: configService.get(EnvVars.JWT_SECRET),
-                    signOptions: { expiresIn: '1h' },
-                }),  
-            }),  
-  ],
+  imports: [TypeOrmModule.forFeature([User, Guess, Location, Log]), JwtConfigModule],
   providers: [ImageUploadService, AuthService, UserService,TypeOrmModule, LocationService],
   controllers: [UploadController]
 })

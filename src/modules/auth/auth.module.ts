@@ -7,19 +7,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { User } from '../../entities/user.entity';
+import { JwtConfigModule } from 'src/common/constants/jwtModule.constant';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get(EnvVars.JWT_SECRET),
-        signOptions: { expiresIn: '1h' },
-      }),
-    }),
-  ],
+    TypeOrmModule.forFeature([User]), JwtConfigModule],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
 })

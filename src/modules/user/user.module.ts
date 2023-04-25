@@ -12,18 +12,12 @@ import { MailModule } from '../mail/mail.module';
 import { MailService } from '../mail/mail.service';
 import { Guess } from 'src/entities/guess.entity';
 import { Log } from 'src/entities/Log.entity';
+import { JwtConfigModule } from 'src/common/constants/jwtModule.constant';
 
 @Module({
     imports: [TypeOrmModule.forFeature([User, Guess, Log]), 
             PassportModule.register({ defaultStrategy: 'jwt' }),
-            JwtModule.registerAsync({
-                imports: [ConfigModule],
-                inject: [ConfigService],
-                useFactory: async (configService: ConfigService) => ({
-                    secret: configService.get(EnvVars.JWT_SECRET),
-                    signOptions: { expiresIn: '1h' },
-                }),
-            }),
+            JwtConfigModule,
             MailModule
         ],
     providers: [UserService, AuthService, MailService],  
