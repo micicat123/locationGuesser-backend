@@ -24,11 +24,11 @@ export class ImageUploadService {
         reject(`Failed to upload image file: ${error}`);
       } else {
         try {
-          const hashedKey = CryptoJS.AES.encrypt(req.files[0].key, process.env.ENCRYPTION_KEY)
-          resolve(hashedKey.toString());
+          const encryptedKey = CryptoJS.AES.encrypt(req.files[0].key, process.env.ENCRYPTION_KEY)
+          resolve(encryptedKey.toString());
         } catch (error) {
           console.log(error);
-          reject(`Failed to generate hashed key: ${error}`);
+          reject(`Failed to generate encrypted key: ${error}`);
         }
       }
     });
@@ -42,17 +42,21 @@ export class ImageUploadService {
       key: function(request, file, cb) {
         cb(null, `${folder}/${Date.now().toString()} - ${file.originalname}`);
       },
+      metadata: function(request, file, cb) {
+        cb(null, {contentType: file.mimetype});
+      }
     }),
   }).array('file', 1);
 
   async retrieveImage(key: string) {
+    var decryptedKey = CryptoJS.AES.decrypt(key, process.env.ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
     try {
       const object = await s3.getObject({
         Bucket: AWS_S3_BUCKET_NAME,
-        Key: key,
+        Key: decryptedKey,
       }).promise();
-
-      return object.Body;
+      
+      return object;
     } catch (error) {
       console.log(error);
       throw new Error(`Failed to retrieve image file: ${error}`);

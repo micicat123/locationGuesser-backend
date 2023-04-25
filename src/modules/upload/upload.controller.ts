@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { ImageUploadService } from './S3.service';
-import { ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiParam, ApiProduces, ApiProperty } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from '../user/user.service';
 import { LocationService } from '../location/location.service';
@@ -39,34 +39,68 @@ export class UploadController {
         @Param('folder') folder: string, 
         @Param('lid') lid?:number
         ) {
-        const uid = await this.authService.userId(request);
+        
         try {
-        const key = await this.imageUploadService.fileupload(request, response, folder);
+            const key = await this.imageUploadService.fileupload(request, response, folder);
 
-        if(folder == 'locations'){
-            await this.locationService.create({
-                id: lid, 
-                picture: key
-            });
-        }
-        else if(folder == 'profile_pictures'){
-            await this.userService.create({
-                id: uid, 
-                picture: key
-            });
-        }
+            if(folder == 'locations'){
+                await this.locationService.create({
+                    id: lid, 
+                    picture: key
+                });
+            }
+            else if(folder == 'profile_pictures'){
+                const uid = await this.authService.userId(request);
+                await this.userService.create({
+                    id: uid, 
+                    picture: key
+                });
+            }
+            else {
+                return response.status(400).json('Invalid folder');
+            }
 
-        return response.status(201).json('image successfully uploaded');
-
+            return response.status(201).json('image successfully uploaded');
         } catch (error) {
-        return response
-            .status(500)
-            .json(`Failed to upload image file: ${error.message}`);
+            return response
+                .status(500)
+                .json(`Failed to upload image file: ${error.message}`);
         }
     }
 
-    @Get('/:id')
-    async get(@Req() request, @Res() response, @Param('folder') folder: string) {
+    @Get(':repository/:lid?')
+    @ApiParam({
+        name: 'lid',
+        required: false,
+    })
+    async get(
+        @Req() request, 
+        @Res() response, 
+        @Param('repository') repository: string,
+        @Param('lid') lid?: string,
+    ) {
+        let s3Key;
 
+        if(repository== 'user'){
+            const uid = await this.authService.userId(request);
+            const user:any = await this.userService.findBy({id: uid});  
+            s3Key = user.picture;
+        }
+        else if (repository == 'location'){
+            const location:any = await this.locationService.findBy({id:lid});
+            s3Key = location.picture;
+        }
+        else {
+            return response.status(400).json('Invalid repository');
+        }
+
+        try {
+            const image:any = await this.imageUploadService.retrieveImage(s3Key);
+            response.set('Content-Type', image.Metadata['contenttype']);
+            response.send(image.Body);
+        } catch (error) {
+            console.error(error);
+            response.status(500).json(`Failed to retrieve image: ${error.message}`);
+        }
     }
 }
