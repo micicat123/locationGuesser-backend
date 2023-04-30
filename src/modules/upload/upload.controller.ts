@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ImageUploadService } from './S3.service';
-import { ApiBody, ApiConsumes, ApiParam, ApiProduces, ApiProperty } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiParam, ApiProduces, ApiProperty } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from '../user/user.service';
 import { LocationService } from '../location/location.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('upload')
 export class UploadController {
@@ -14,6 +15,8 @@ export class UploadController {
         private readonly locationService: LocationService
     ) {}
 
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
     @ApiConsumes('multipart/form-data')
     @Post('/:folder/:lid?')
     @ApiBody({
@@ -37,7 +40,7 @@ export class UploadController {
         @Req() request, 
         @Res() response, 
         @Param('folder') folder: string, 
-        @Param('lid') lid?:number
+        @Param('lid') lid?:any
         ) {
         
         try {
@@ -45,7 +48,7 @@ export class UploadController {
 
             if(folder == 'locations'){
                 await this.locationService.create({
-                    id: lid, 
+                    id: parseInt(lid), 
                     picture: key
                 });
             }

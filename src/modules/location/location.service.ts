@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommonModulesService } from 'src/common/common-modules/common-modules.service';
-import { Guess } from 'src/entities/guess.entity';
-import { Location } from 'src/entities/location.entity';
+import { CommonModulesService } from '../../common/common-modules/common-modules.service';
+import { Guess } from '../../entities/guess.entity';
+import { Location } from '../../entities/location.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -26,10 +26,12 @@ export class LocationService extends CommonModulesService{
         return data;
     }
 
-    async getRandomLocation(): Promise<any>{        
-        const locations = await this.locationRepository.find();
-    
-        return locations[Math.floor(Math.random() * locations.length)];
+    async getRandomLocation(): Promise<any>{  
+        const randomIndex = Math.floor(Math.random() * (await this.locationRepository.count()));
+        return await this.locationRepository.find({
+            take: 1,
+            skip: randomIndex,
+        });
     }
 
     async getLocationLeaderboard(id:number): Promise<any>{        
@@ -64,6 +66,10 @@ export class LocationService extends CommonModulesService{
             relations:['user']
         });
         return data;
+    }
+
+    async deleteGuessesForLocation(lid:number){
+        this.guessRepository.query(`DELETE FROM "guess" WHERE location_id=${lid}`);
     }
     
 }

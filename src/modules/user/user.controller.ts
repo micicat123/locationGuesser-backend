@@ -9,8 +9,9 @@ import * as bcrypt from 'bcrypt';
 import { MailService } from '../mail/mail.service';
 import { EmailDto } from '../mail/dto/email.dto';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { LogActionDto } from './dto/log-action.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
@@ -21,14 +22,17 @@ export class UserController {
         private jwtService: JwtService
     ){ }
 
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
     @Get('/best')
     async getPersonalBest(@Req() request: Request) {
         const id = await this.authService.userId(request);
         return this.userService.getPersonalBest(id);
     }
 
-    //@UseGuards(AuthGuard())
-    @Put('info')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Put('/info')
     async updateInfo(   
         @Body() body: UpdateUserInfoDto,
         @Req() request: Request
@@ -43,8 +47,9 @@ export class UserController {
         });
     }
 
-    //@UseGuards(AuthGuard())
-    @Put('pass')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Put('/pass')
     async updatePassword(   
         @Body() body: UpdateUserPasswordDto,
         @Req() request: Request
@@ -80,7 +85,7 @@ export class UserController {
     }
 
     //verify email
-    @Get('auth-email/:token/:username')
+    @Get('/auth-email/:token/:username')
     async authenticateToken(
         @Param('token') token: string,
         @Param('username') username: string,
@@ -99,6 +104,8 @@ export class UserController {
     }
 
     //log action
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
     @Post('/log-action')
     async logAction(
         @Body() body:LogActionDto,
@@ -110,6 +117,8 @@ export class UserController {
     }
 
     //get logged actions
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
     @Get('/admin/logs')
     async getLogs() {
         await this.userService.getLogs();

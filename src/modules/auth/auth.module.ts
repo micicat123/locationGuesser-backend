@@ -1,18 +1,22 @@
-import { EnvVars } from './../../common/constants/env-vars.contant';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { User } from '../../entities/user.entity';
-import { JwtConfigModule } from 'src/common/constants/jwtModule.constant';
+import { JwtConfigModule } from '../../common/constants/jwtModule.constant';
+import { UserService } from '../user/user.service';
+import { Guess } from '../../entities/guess.entity';
+import { Log } from '../../entities/Log.entity';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]), JwtConfigModule],
+    TypeOrmModule.forFeature([User, Guess, Log]), 
+    JwtConfigModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, UserService],
 })
 export class AuthModule {}

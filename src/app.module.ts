@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
 import typeOrmModuleOptions from './config/orm.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { LocationModule } from './modules/location/location.module';
@@ -9,10 +8,15 @@ import { CommonModulesModule } from './common/common-modules/common-modules.modu
 import { UserModule } from './modules/user/user.module';
 import { MailModule } from './modules/mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { GuessModule } from './modules/guess/guess.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { TestTypeOrmModuleOptions } from './config/test.rom.config';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+const isTest = process.env.TEST === 'true';
+const databaseConfig = isTest ? TestTypeOrmModuleOptions : typeOrmModuleOptions;
 
 @Module({
   imports: [
@@ -21,7 +25,7 @@ import { UploadModule } from './modules/upload/upload.module';
       envFilePath: `${process.env.NODE_ENV}.env`,
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: () => typeOrmModuleOptions,
+      useFactory: () => databaseConfig,
     }),
     MailerModule.forRoot({
       transport: {
@@ -51,6 +55,6 @@ import { UploadModule } from './modules/upload/upload.module';
     GuessModule,
     UploadModule,
   ],
-  controllers: [AppController],
+  controllers: [],
 })
 export class AppModule {}

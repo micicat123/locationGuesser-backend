@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommonModulesService } from 'src/common/common-modules/common-modules.service';
-import { Guess } from 'src/entities/guess.entity';
+import { CommonModulesService } from '../../common/common-modules/common-modules.service';
+import { Guess } from '../../entities/guess.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

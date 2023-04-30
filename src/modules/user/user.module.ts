@@ -2,17 +2,15 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/entities/user.entity';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { User } from '../../entities/user.entity';
 import { AuthService } from '../auth/auth.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EnvVars } from 'src/common/constants/env-vars.contant';
 import { PassportModule } from '@nestjs/passport';
 import { MailModule } from '../mail/mail.module';
 import { MailService } from '../mail/mail.service';
-import { Guess } from 'src/entities/guess.entity';
-import { Log } from 'src/entities/Log.entity';
-import { JwtConfigModule } from 'src/common/constants/jwtModule.constant';
+import { Guess } from '../../entities/guess.entity';
+import { Log } from '../../entities/Log.entity';
+import { JwtConfigModule } from '../../common/constants/jwtModule.constant';
+import { JwtStrategy } from '../auth/jwt/jwt.strategy';
 
 @Module({
     imports: [TypeOrmModule.forFeature([User, Guess, Log]), 
@@ -20,7 +18,7 @@ import { JwtConfigModule } from 'src/common/constants/jwtModule.constant';
             JwtConfigModule,
             MailModule
         ],
-    providers: [UserService, AuthService, MailService],  
+    providers: [UserService, AuthService, MailService, JwtStrategy],  
     controllers: [UserController],
     exports: [UserService]
 })

@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Param, Post, Put,Delete, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put,Delete, Req, UseGuards } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { LocationCreateUpdateDto } from './dto/create-update.dto';
 import { AuthService } from '../auth/auth.service';
 import { Request } from 'express';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('location')
 export class LocationController {
@@ -11,6 +13,8 @@ export class LocationController {
         private authService: AuthService
     ){ }
 
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
     @Post()
     async createLocation(
         @Body() body: LocationCreateUpdateDto,
@@ -25,41 +29,53 @@ export class LocationController {
         }); 
     }
 
-    @Get()
-    async getLocations(@Param('page') page: number) {
-      return this.locationService.getLatestLocations(page); 
-    }
-
-    @Get('/random')
-    async getRandomLocation() {
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/random-location')
+    async getRandomLocation() { 
       return this.locationService.getRandomLocation(); 
     }
 
-    @Get('/leaderboard/:id')
-    async getLocationLeaderboard(@Param('id') id: number) {
-      return this.locationService.getLocationLeaderboard(id); 
-    }
-
-    @Put('/:id')
-    async updateLocation(
-        @Body() body: LocationCreateUpdateDto,
-        @Param('id') id: number
-    ): Promise<Location>{
-        return await this.locationService.create({
-            id,
-            latitude: body.latitude,
-            longitude: body.longitude
-        });
-    }
-
-    @Delete('/:id')
-    async deleteQuote(@Param('id') id: number): Promise<Location>{
-        return this.locationService.delete(id); 
-    }
-
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
     @Get('/user')
     async getUsersLocations(@Req() request: Request) {
         const id = await this.authService.userId(request);
         return this.locationService.getUsersLocations(id);
     }
+
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/leaderboard/:id')
+    async getLocationLeaderboard(@Param('id') id: number) {
+      return this.locationService.getLocationLeaderboard(id); 
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Put('/:id')
+    async updateLocation(
+        @Body() body: LocationCreateUpdateDto,
+        @Param('id') id: any
+    ): Promise<Location>{
+        return await this.locationService.create({
+            id: parseInt(id),
+            latitude: body.latitude,
+            longitude: body.longitude
+        });
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Delete('/:id')
+    async deleteQuote(@Param('id') id: number): Promise<Location>{
+        await this.locationService.deleteGuessesForLocation(id);
+        return this.locationService.delete(id); 
+    }
+
+    @Get('/:page')
+    async getLocations(@Param('page') page: number) {
+      return this.locationService.getLatestLocations(page); 
+    }
+
 }

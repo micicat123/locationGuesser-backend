@@ -51,10 +51,11 @@ export class AuthService {
   }
 
   async validateUser(username: string, password: string) {
-    const user = await this.usersRepository.findOne(
-      { username },
-      { select: ['id', 'username', 'password'] },
-    );
+
+     const user = await this.usersRepository.findOne(
+        { username },
+        { select: ['id', 'username', 'password'] },
+    );  
 
     if (!user) {
       throw new NotFoundException(`User with username ${username} not found`);
@@ -71,15 +72,22 @@ export class AuthService {
     return user;
   }
 
-  async userId(request : Request): Promise<number>{
-    const cookie = request.cookies['jwt'];
-    const data = await this.jwtService.verify(cookie, {secret: process.env.JWT_SECRET});
+  async userId(request:Request): Promise<number>{
+    let cookie;
+    
+    try{
+        cookie = request.cookies['jwt'];
+    }
+    catch(err){
+        cookie = request.headers.cookie
+    }
 
+    const data = await this.jwtService.verify(cookie, {secret: process.env.JWT_SECRET});
     return data['sub'];
   }
 
   async generateToken(user:User): Promise<string>{
     const payload: JwtPayloadDto = { username: user.username, sub: user.id };
     return this.jwtService.sign(payload);
-  }
+  }   
 }

@@ -1,9 +1,7 @@
 import { Req, Res, Injectable } from '@nestjs/common';
 import * as multer from 'multer';
 import { S3 } from 'aws-sdk/clients/all';
-import * as AWS from 'aws-sdk';
 import * as multerS3 from 'multer-s3';
-import * as bcrypt from 'bcrypt';
 import * as CryptoJS from 'crypto-js';
 
 const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;

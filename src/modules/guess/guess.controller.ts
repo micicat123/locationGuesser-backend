@@ -1,7 +1,9 @@
-import { Controller, Param, Post, Req } from '@nestjs/common';
+import { Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { Request } from 'express';
 import { GuessService } from './guess.service';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('guess')
 export class GuessController {
@@ -10,6 +12,8 @@ export class GuessController {
         private authService:AuthService
     ){ }
     
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
     @Post('/:lId/:distance')
     async guessTheLocation(
         @Param('lId') lId: number,

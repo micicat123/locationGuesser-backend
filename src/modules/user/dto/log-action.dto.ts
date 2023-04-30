@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength } from 'class-validator';
-import { User } from 'src/entities/user.entity';
+import { IsString } from 'class-validator';
 
 export class LogActionDto {
 

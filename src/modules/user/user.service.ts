@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommonModulesService } from 'src/common/common-modules/common-modules.service';
-import { Log } from 'src/entities/Log.entity';
-import { Guess } from 'src/entities/guess.entity';
-import { User } from 'src/entities/user.entity';
+import { CommonModulesService } from '../../common/common-modules/common-modules.service';
+import { Log } from '../../entities/Log.entity';
+import { Guess } from '../../entities/guess.entity';
+import { User } from '../../entities/user.entity';
 import { Repository } from 'typeorm';
 import { LogActionDto } from './dto/log-action.dto';
 

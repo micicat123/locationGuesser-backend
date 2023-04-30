@@ -1,7 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { CustomBaseEntity } from './base.entity';
 import { User } from './user.entity';
-import { Location } from './location.entity';
 
 @Entity()
 export class Log extends CustomBaseEntity {
