@@ -7,27 +7,31 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('guess')
 export class GuessController {
-    constructor( 
-        private guessService: GuessService,
-        private authService:AuthService
-    ){ }
-    
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard('jwt'))
-    @Post('/:lId/:distance')
-    async guessTheLocation(
-        @Param('lId') lId: number,
-        @Param('distance') distance: number,
-        @Req() request: Request
-    ){
-        const uid:number = await this.authService.userId(request);
-        await this.guessService.isAllowed(uid, lId);
+  constructor(
+    private guessService: GuessService,
+    private authService: AuthService,
+  ) {}
 
-        return await this.guessService.create({
-            errorDistance: distance,
-            user: uid,
-            location: lId
-        });
-    }
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post('/:lId/:distance')
+  async guessTheLocation(
+    @Param('lId') lId: number,
+    @Param('distance') distance: number,
+    @Req() request: Request,
+  ) {
+    const uid: number = await this.authService.userId(request);
+    if (uid == -1)
+      return {
+        success: false,
+        message: `token isn't valid`,
+      };
+    await this.guessService.isAllowed(uid, lId);
 
+    return await this.guessService.create({
+      errorDistance: distance,
+      user: uid,
+      location: lId,
+    });
+  }
 }

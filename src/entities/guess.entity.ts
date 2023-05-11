@@ -1,19 +1,28 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from './user.entity';
 import { Location } from './location.entity';
 import { CustomBaseEntity } from './base.entity';
 
 @Entity()
-export class Guess extends CustomBaseEntity{
+export class Guess extends CustomBaseEntity {
   @Column({ nullable: false })
   @Index()
-  errorDistance: string;
+  errorDistance: number;
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  user: User
+  user: User;
 
   @ManyToOne(() => Location)
-  @JoinColumn({name: 'location_id'})
-  location: Location
+  @JoinColumn({ name: 'location_id' })
+  location: Location;
 }

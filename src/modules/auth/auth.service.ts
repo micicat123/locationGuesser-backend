@@ -46,7 +46,7 @@ export class AuthService {
       const payload: JwtPayloadDto = { username: user.username, sub: user.id };
       // eslint-disable-next-line @typescript-eslint/camelcase
       const access_token =  this.jwtService.sign(payload);
-      response.cookie('jwt', access_token, {httpOnly: true});
+      response.cookie('jwt', access_token);
       return access_token;
   }
 
@@ -82,8 +82,13 @@ export class AuthService {
         cookie = request.headers.cookie
     }
 
-    const data = await this.jwtService.verify(cookie, {secret: process.env.JWT_SECRET});
-    return data['sub'];
+    try{
+        const data = await this.jwtService.verify(cookie, {secret: process.env.JWT_SECRET});
+        return data['sub'];
+    }
+    catch(err){
+        return -1
+    }    
   }
 
   async generateToken(user:User): Promise<string>{

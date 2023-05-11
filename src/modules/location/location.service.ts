@@ -6,70 +6,80 @@ import { Location } from '../../entities/location.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class LocationService extends CommonModulesService{
-    constructor( 
-        @InjectRepository(Location) private readonly locationRepository: Repository<Location>,
-        @InjectRepository(Guess) private readonly guessRepository: Repository<Guess>
-    ){
-        super(locationRepository);
-    }
+export class LocationService extends CommonModulesService {
+  constructor(
+    @InjectRepository(Location)
+    private readonly locationRepository: Repository<Location>,
+    @InjectRepository(Guess)
+    private readonly guessRepository: Repository<Guess>,
+  ) {
+    super(locationRepository);
+  }
 
-    async getLatestLocations(page:number): Promise<any>{        
-        const take = 9;
-        const [data, total] =  await this.locationRepository.findAndCount({
-            take,
-            skip: take * (page - 1),
-            order: {
-                createdAt: 'DESC'
-            }
-        });
-        return data;
-    }
+  async getLatestLocations(page: number): Promise<any> {
+    const take = 9;
+    const [data, total] = await this.locationRepository.findAndCount({
+      take,
+      skip: take * (page - 1),
+      order: {
+        createdAt: 'DESC',
+      },
+    });
 
-    async getRandomLocation(): Promise<any>{  
-        const randomIndex = Math.floor(Math.random() * (await this.locationRepository.count()));
-        return await this.locationRepository.find({
-            take: 1,
-            skip: randomIndex,
-        });
-    }
+    const totalPages = Math.ceil(total / take);
+    const isLastPage = page == totalPages;
+    return { data, isLastPage };
+  }
 
-    async getLocationLeaderboard(id:number): Promise<any>{        
-        const take = 12;
-        const [data] =  await this.guessRepository.findAndCount({
-            take,
-            where: {
-                location:{
-                    id
-                }
-            },
-            order: {
-                errorDistance: 'ASC'
-            },
-            relations:['location']
-        });
-        return data;
-    }
+  async getRandomLocation(): Promise<any> {
+    const randomIndex = Math.floor(
+      Math.random() * (await this.locationRepository.count()),
+    );
+    return await this.locationRepository.find({
+      take: 1,
+      skip: randomIndex,
+    });
+  }
 
-    async getUsersLocations(id:number): Promise<any>{        
-        const take = 4;
-        const [data] =  await this.locationRepository.findAndCount({
-            take,
-            where: {
-                user:{
-                    id
-                }
-            },
-            order: {
-                createdAt: 'DESC'
-            },
-            relations:['user']
-        });
-        return data;
-    }
+  async getLocationLeaderboard(id: number): Promise<any> {
+    const take = 12;
+    const [data] = await this.guessRepository.findAndCount({
+      take,
+      where: {
+        location: {
+          id,
+        },
+      },
+      order: {
+        errorDistance: 'ASC',
+      },
+      relations: ['location'],
+    });
+    return data;
+  }
 
-    async deleteGuessesForLocation(lid:number){
-        this.guessRepository.query(`DELETE FROM "guess" WHERE location_id=${lid}`);
-    }
-    
+  async getUsersLocations(id: number, page: number): Promise<any> {
+    const take = 4;
+    const [data, total] = await this.locationRepository.findAndCount({
+      take,
+      skip: take * (page - 1),
+      where: {
+        user: {
+          id,
+        },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      relations: ['user'],
+    });
+
+    const totalPages = Math.ceil(total / take);
+    const isLastPage = page == totalPages;
+    return { data, isLastPage };
+  }
+
+  async deleteGuessesForLocation(lid: number) {
+    this.guessRepository.query(`DELETE FROM "guess" WHERE location_id=${lid}`);
+  }
 }
