@@ -40,6 +40,7 @@ export class LocationController {
       picture: '',
       latitude: body.latitude,
       longitude: body.longitude,
+      adress: body.address,
       user: id,
     });
   }
@@ -85,6 +86,7 @@ export class LocationController {
       id: parseInt(id),
       latitude: body.latitude,
       longitude: body.longitude,
+      address: body.address,
     });
   }
 

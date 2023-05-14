@@ -8,14 +8,16 @@ export class Location extends CustomBaseEntity {
   @Index()
   picture: string;
 
-  @Column({ type: 'decimal', nullable: false})
+  @Column({ type: 'decimal', nullable: false })
   latitude: number;
 
-  @Column({ type: 'decimal', nullable: false})
+  @Column({ type: 'decimal', nullable: false })
   longitude: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({name: 'user_id'})
-  user: User;
+  @Column({ nullable: false })
+  address: string;
 
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }
