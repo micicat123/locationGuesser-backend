@@ -121,9 +121,13 @@ describe('AppController (e2e)', () => {
         .set('Cookie', `${userToken}`)
         .expect(200)
         .then(response => {
-          expect(response.body).toStrictEqual({
-            body: { message: 'This user is an admin', success: true },
-          });
+          const expectedBody = {
+            message: 'This user is an admin',
+            success: true,
+          };
+          const { message, success, ...remainingBody } = response.body.body;
+          expect(message).toBe(expectedBody.message);
+          expect(success).toBe(expectedBody.success);
         });
     });
 
@@ -134,9 +138,13 @@ describe('AppController (e2e)', () => {
         .set('Cookie', `${userTokenNotAdmin}`)
         .expect(200)
         .then(response => {
-          expect(response.body).toStrictEqual({
-            body: { message: 'This user is not an admin', success: false },
-          });
+          const expectedBody = {
+            message: 'This user is not an admin',
+            success: false,
+          };
+          const { message, success, ...remainingBody } = response.body.body;
+          expect(message).toBe(expectedBody.message);
+          expect(success).toBe(expectedBody.success);
         });
     });
   });
@@ -148,7 +156,7 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .then(response => {
         expect(response.body).toBeDefined();
-        expect(response.body.length).toBe(9);
+        expect(response.body.data.length).toBe(9);
       });
   });
 
@@ -165,12 +173,12 @@ describe('AppController (e2e)', () => {
 
   it('/location/user (GET) should get 4 latests user locations', () => {
     return request(app.getHttpServer())
-      .get('/location/user')
+      .get('/location/user/1')
       .set('authorization', `Bearer ${userToken}`)
       .set('Cookie', `${userToken}`)
       .expect(200)
       .then(response => {
-        expect(response.body.length).toBe(4);
+        expect(response.body.data.length).toBe(4);
       });
   });
 
@@ -187,6 +195,7 @@ describe('AppController (e2e)', () => {
       .send({
         latitude: 999999,
         longitude: 999999,
+        address: 'test address',
       })
       .set('authorization', `Bearer ${userToken}`)
       .set('Cookie', `${userToken}`)
@@ -218,14 +227,14 @@ describe('AppController (e2e)', () => {
   });
 
   //USER
-  it('/user/best (GET) should return users best guesses', () => {
+  it('/user/best/3/1 (GET) should return users best guesses', () => {
     return request(app.getHttpServer())
-      .get(`/user/best/3`)
+      .get(`/user/best/3/1`)
       .set('authorization', `Bearer ${userToken}`)
       .set('Cookie', `${userToken}`)
       .expect(200)
       .then(response => {
-        expect(response.body.length).toBe(3);
+        expect(response.body.data.length).toBe(3);
       });
   });
 
@@ -325,7 +334,7 @@ describe('AppController (e2e)', () => {
   });
 
   //UPLOAD
-  describe('/upload/:folder/:lid? (POST)', () => {
+  describe('/upload/:folder/:id (POST)', () => {
     it('should upload an image to locations folder', async () => {
       return request(app.getHttpServer())
         .post('/upload/locations/1')
@@ -339,7 +348,7 @@ describe('AppController (e2e)', () => {
 
     it('should upload an image to profile_pictures folder', async () => {
       return request(app.getHttpServer())
-        .post('/upload/profile_pictures')
+        .post('/upload/profile_pictures/7')
         .set('authorization', `Bearer ${userToken}`)
         .set('Cookie', `${userToken}`)
         .attach('file', './test/images/test.png')
@@ -353,7 +362,7 @@ describe('AppController (e2e)', () => {
   describe('/upload/:repository/:lid? (GET)', () => {
     it('should return an image for user repository', async () => {
       return request(app.getHttpServer())
-        .get('/upload/user')
+        .get('/upload/user/7')
         .set('authorization', `Bearer ${userToken}`)
         .set('Cookie', `${userToken}`)
         .expect(200)

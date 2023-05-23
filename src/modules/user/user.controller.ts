@@ -23,6 +23,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../../entities/user.entity';
 import { LogActionDto } from './dto/log-action.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { ResetUserPasswordDto } from './dto/reset-pass.dto';
 
 @Controller('user')
 export class UserController {
@@ -48,6 +49,19 @@ export class UserController {
         message: `token isn't valid`,
       };
     return this.userService.getPersonalBest(id, take, page);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/guesses')
+  async getAllGuesses(@Req() request: Request) {
+    const id = await this.authService.userId(request);
+    if (id == -1)
+      return {
+        success: false,
+        message: `token isn't valid`,
+      };
+    return this.userService.getGuesses(id);
   }
 
   @ApiBearerAuth()
@@ -134,18 +148,34 @@ export class UserController {
     }
   }
 
+  //reset password
+  @Put('/reset-pass')
+  async resetPassword(
+    @Body() body: ResetUserPasswordDto,
+    @Req() request: Request,
+  ) {
+    if (body.newPassword !== body.confirmNewPassword)
+      throw new BadRequestException('Passwords do not match!');
+
+    const hashed = await bcrypt.hash(body.newPassword, 10);
+    const found: any = await this.userService.findBy({
+      username: body.username,
+    });
+    await this.userService.create({
+      id: found.id,
+      password: hashed,
+    });
+    return this.userService.findBy({ username: body.username });
+  }
+
   //log action
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Post('/log-action')
   async logAction(@Body() body: LogActionDto, @Req() request: Request) {
     const id = await this.authService.userId(request);
-    if (id == -1)
-      return {
-        success: false,
-        message: `token isn't valid`,
-      };
-    const found = await this.userService.findBy({ id });
+    let found: User | null = null;
+    if (id != -1) {
+      found = await this.userService.findBy({ id });
+    }
     await this.userService.logAction(body, found);
   }
 
@@ -154,6 +184,6 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/admin/logs')
   async getLogs() {
-    await this.userService.getLogs();
+    return await this.userService.getLogs();
   }
 }

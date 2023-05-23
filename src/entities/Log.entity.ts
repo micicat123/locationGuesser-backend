@@ -7,10 +7,10 @@ export class Log extends CustomBaseEntity {
   @Column({ nullable: false })
   action: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   component: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   newValue: string;
 
   @Column({ nullable: false })
@@ -18,5 +18,5 @@ export class Log extends CustomBaseEntity {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
-  user: User
+  user: User;
 }

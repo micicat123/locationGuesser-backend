@@ -9,31 +9,31 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class MailService {
-    constructor(
-        private mailerService: MailerService, 
-        private authService: AuthService,
-        private userService: UserService
-    ) {}
+  constructor(
+    private mailerService: MailerService,
+    private authService: AuthService,
+    private userService: UserService,
+  ) {}
 
   async sendPasswordReset(user: User) {
     const token = await this.authService.generateToken(user);
-    const url = `example.com/auth/confirm?token=${token}`;
+    const url = `http://localhost:3000/auth-reset/${token}/${user.username}`;
 
     await this.mailerService.sendMail({
       to: user.username,
       subject: 'Geotagger - Password Reset ',
       template: __dirname + '/templates/confirmation.hbs',
-      context: { 
-        name: user.firstName + " " + user.lastName,
+      context: {
+        name: user.firstName + ' ' + user.lastName,
         url,
       },
     });
 
     const hashedToken = await bcrypt.hash(token, 10);
-    const id = user.id;  
+    const id = user.id;
     await this.userService.create({
-        id: user.id, 
-        resetToken: hashedToken
-    });   
+      id: user.id,
+      resetToken: hashedToken,
+    });
   }
 }

@@ -60,4 +60,15 @@ export class UserService extends CommonModulesService {
     });
     return data;
   }
+
+  async getGuesses(id: number) {
+    return await this.guessRepository.find({
+      where: {
+        user: {
+          id: id,
+        },
+      },
+      relations: ['user', 'location'],
+    });
+  }
 }

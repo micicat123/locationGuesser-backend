@@ -32,7 +32,7 @@ export class UploadController {
   ) {}
 
   @ApiConsumes('multipart/form-data')
-  @Post('/:folder/:lid?')
+  @Post('/:folder/:id')
   @ApiBody({
     description: 'Image file',
     type: 'object',
@@ -46,15 +46,11 @@ export class UploadController {
       },
     },
   })
-  @ApiParam({
-    name: 'lid',
-    required: false,
-  })
   async create(
     @Req() request,
     @Res() response,
     @Param('folder') folder: string,
-    @Param('lid') lid?: any,
+    @Param('id') id: any,
   ) {
     try {
       const key = await this.imageUploadService.fileupload(
@@ -65,18 +61,12 @@ export class UploadController {
 
       if (folder == 'locations') {
         await this.locationService.create({
-          id: parseInt(lid),
+          id: parseInt(id),
           picture: key,
         });
       } else if (folder == 'profile_pictures') {
-        const uid = await this.authService.userId(request);
-        if (uid == -1)
-          return {
-            success: false,
-            message: `token isn't valid`,
-          };
         await this.userService.create({
-          id: uid,
+          id: parseInt(id),
           picture: key,
         });
       } else {
@@ -91,30 +81,19 @@ export class UploadController {
     }
   }
 
-  @Get(':repository/:lid?')
-  @ApiParam({
-    name: 'lid',
-    required: false,
-  })
+  @Get(':repository/:id?')
   async get(
-    @Req() request,
     @Res() response,
     @Param('repository') repository: string,
-    @Param('lid') lid?: string,
+    @Param('id') id: number,
   ) {
     let s3Key: string;
 
     if (repository == 'user') {
-      const uid: any = await this.authService.userId(request);
-      if (uid == -1)
-        return {
-          success: false,
-          message: `token isn't valid`,
-        };
-      const user: User = await this.userService.findBy({ id: parseInt(uid) });
+      const user: User = await this.userService.findBy({ id });
       s3Key = user.picture;
     } else if (repository == 'location') {
-      const location: any = await this.locationService.findBy({ id: lid });
+      const location: any = await this.locationService.findBy({ id });
       s3Key = location.picture;
     } else {
       return response.status(400).json('Invalid repository');

@@ -36,11 +36,12 @@ export class LocationController {
         success: false,
         message: `token isn't valid`,
       };
+
     return this.locationService.create({
       picture: '',
       latitude: body.latitude,
       longitude: body.longitude,
-      adress: body.address,
+      address: body.address,
       user: id,
     });
   }

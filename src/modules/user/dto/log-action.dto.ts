@@ -2,18 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
 export class LogActionDto {
-
   @ApiProperty()
   @IsString()
   action: string;
 
   @ApiProperty()
-  @IsString()
-  component: string;
+  component: string | null;
 
   @ApiProperty()
-  @IsString()
-  newValue: string;
+  newValue: string | null;
 
   @ApiProperty()
   @IsString()

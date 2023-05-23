@@ -1,4 +1,4 @@
-import { Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { Request } from 'express';
 import { GuessService } from './guess.service';
@@ -33,5 +33,12 @@ export class GuessController {
       user: uid,
       location: lId,
     });
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/:lId')
+  async getGuesses(@Param('lId') lId: number) {
+    return await this.guessService.getGuesses(lId);
   }
 }
